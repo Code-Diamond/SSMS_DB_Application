@@ -27,9 +27,6 @@ namespace SSMS_DB_Application
             // Initially created by Jamin Ghata  2/8/2018 
             Console.WriteLine("Welcome to SSMS_DB_Application!\n\n");
 
-
-
-
             // Loop
             start:
                 do
@@ -61,10 +58,6 @@ namespace SSMS_DB_Application
                         mainMenu(input);
                     }
 
-
-
-
-                    //Keep the program open until the user types "EXIT"
                     //promptToContinue();
                 
                 } while (keepGoing);
@@ -72,7 +65,7 @@ namespace SSMS_DB_Application
 
 
         }
-
+        //Main Menu functionality
         public static void mainMenu(string input)
         {
             switch(input)
@@ -86,36 +79,62 @@ namespace SSMS_DB_Application
                         Console.WriteLine("Opening the connection...");
                         sql.Open();
                         //Dictate to the user if the connection is set to open.
+                        Console.WriteLine("The connection is currently set to {0}.", sql.State);
+                        if(sql.State.ToString() == "Open")
+                        {
+                            Console.WriteLine("\n Connection Successful! \n");
+                        }
+                        Console.WriteLine("\n-Press any key to continue to the main menu.");
+                        Console.ReadKey();
+                    }
+                    catch(SqlException e)
+                    {
+                        Console.WriteLine("Error connecting to Database.\n Exception:     "  + e);
+                    }
+                    break;
+
+
+
+                // Close the connection
+                case "B":
+                    try
+                    {
+                        Console.WriteLine("Closing the connection...");
+                        sql.Close();
                         Console.WriteLine("The connection is currently set to {0}. \n-Press any key to continue to the main menu", sql.State);
                         Console.ReadKey();
                     }
                     catch(SqlException e)
                     {
-                        Console.WriteLine(e);
+                        Console.WriteLine("Error in closing the connection to the database.\n Exception:     " + e);
                     }
-                    
                     break;
 
-                // Close the connection
-                case "B":
-                    Console.WriteLine("Closing the connection...");
-                    sql.Close();
-                    Console.WriteLine("The connection is currently set to {0}. \n-Press any key to continue to the main menu", sql.State);
-                    Console.ReadKey();
 
-                    break;
 
                 // Check the Connection
                 case "C":
-                    Console.WriteLine("The current version: " + sql.ServerVersion);
-                    Console.WriteLine("The current connection is {0}. \n-Press any key to continue to the main menu.", sql.State);
-                    Console.ReadKey();
+                    try
+                    {
+                        Console.WriteLine("The current version: " + sql.ServerVersion);
+                        Console.WriteLine("The current connection is {0}. \n-Press any key to continue to the main menu.", sql.State);
+                        Console.ReadKey();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error in checking the connection to the database.\n Exception:     " + e + "\n Press any key to continue back to the main menu.");
+                        Console.ReadKey();
+                    }
                     break;
+
+
 
                 // Exit the program
                 case "X":
                     Environment.Exit(0);
                     break;
+
+
 
                 // Default for the Menu is an error message
                 default:
@@ -125,20 +144,26 @@ namespace SSMS_DB_Application
             }
         }
 
-        //
-        public static void switchKeepGoing()
-        {
-            keepGoing = !keepGoing;
-        }
+        //Displays the main menu
 
         public static void displayMenu()
         {
+            if(sql.State.ToString() == "Open")
+            {
+                Console.WriteLine("Sql Connection Open.");
+                Console.WriteLine(sql.ConnectionString);
+                Console.WriteLine(sql.ServerVersion);
+                Console.WriteLine("------------------------\n");
+            }
+
+            Console.WriteLine("Main Menu");
             Console.WriteLine("A. Create Connection \n"
-                + "B. Close Connection  \n"
-                + "C. Check Connection  \n"
-                + "X. Exit Program      \n");
+                             + "B. Close Connection  \n"
+                             + "C. Check Connection  \n"
+                             + "X. Exit Program      \n");
         }
 
+        //A function to prompt to continue (Redundant)
         public static void promptToContinue()
         {
             Console.WriteLine("Press any key to continue (type \"x\" or \"exit\" to exit).");
@@ -147,6 +172,15 @@ namespace SSMS_DB_Application
             if (key == "EXIT" || key == "X") { keepGoing = false; }
         }
 
+        //A function to switch the loop controller condition
+        public static void switchKeepGoing()
+        {
+            keepGoing = !keepGoing;
+        }
+
 
     }
+
+
+
 }
